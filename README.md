@@ -38,8 +38,8 @@ npm run dev
 ## Server Environment (`server/.env`)
 ```env
 MONGO_URI=your_mongo_uri
-ADMIN_USER=admin
-ADMIN_PASS=strongpassword
+ADMIN_USER=username
+ADMIN_PASS=yourpassword
 CLIENT_URL=http://localhost:5173
 PORT=5000
 RATE_LIMIT_WINDOW_MS=900000
