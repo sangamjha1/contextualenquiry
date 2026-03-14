@@ -1,0 +1,161 @@
+{
+  "doctor": [
+    "Describe your end-to-end consultation workflow from patient arrival to treatment plan finalization.",
+    "Where do you spend the most non-clinical time in a typical day?",
+    "How do you access previous patient history, and what delays occur?",
+    "What information is usually missing when patients reach you?",
+    "How do lab and radiology results currently reach you, and what causes delays?",
+    "Which clinical decisions are slowed by incomplete or late data?",
+    "Where do duplicate data entries happen across OPD/IPD systems?",
+    "How do you coordinate with nurses, pharmacy, and billing during patient care?",
+    "What communication gaps most often impact patient safety or quality?",
+    "How do you track follow-ups, chronic cases, or treatment adherence?",
+    "What reporting or documentation tasks feel redundant?",
+    "What real-time dashboard information would most improve your decisions?",
+    "What should JEEVAN NETRA automate first for doctors?"
+  ],
+  "nurse": [
+    "Walk through your shift workflow from handover to shift closure.",
+    "What patient information is hardest to access quickly during rounds?",
+    "Where do medication administration delays happen most often?",
+    "How do you currently record vitals and nursing notes?",
+    "Which tasks require entering the same data in multiple places?",
+    "How do you communicate urgent updates to doctors and support teams?",
+    "What issues occur during bed transfers, discharge, or admissions?",
+    "How do you track pending orders and completed interventions?",
+    "What bottlenecks reduce time available for direct patient care?",
+    "What features in JEEVAN NETRA would improve nursing efficiency most?"
+  ],
+  "receptionist": [
+    "Describe the patient registration and appointment workflow step by step.",
+    "What are the most frequent delays at the front desk?",
+    "How do you verify patient identity and demographic details?",
+    "Where do repeat visits create duplicate records?",
+    "How do you manage queue visibility for patients and clinicians?",
+    "What communication gaps occur between reception, billing, and OPD?",
+    "How often are appointments rescheduled, and why?",
+    "What information do patients ask for that is hard to provide quickly?",
+    "What should JEEVAN NETRA improve first at reception?"
+  ],
+  "labTechnician": [
+    "Explain the workflow from test order receipt to report release.",
+    "Where do sample labeling or tracking errors happen?",
+    "How do you prioritize urgent vs routine tests today?",
+    "What causes delays in result validation and doctor notification?",
+    "How often do you re-enter patient or order data manually?",
+    "How integrated is your lab system with hospital records currently?",
+    "What quality or compliance checks are hardest to maintain?",
+    "What real-time data would help you manage workload better?",
+    "What should JEEVAN NETRA solve for lab operations first?"
+  ],
+  "pharmacist": [
+    "Describe your prescription-to-dispense workflow.",
+    "What prescription issues commonly require clarification with doctors?",
+    "How do you check drug availability and alternatives in real time?",
+    "Where do billing or inventory mismatches usually occur?",
+    "How do you record controlled drug dispensing and compliance notes?",
+    "What delays happen between order entry and medicine handover?",
+    "How do you coordinate with nursing for in-patient medication cycles?",
+    "What duplicate documentation work affects pharmacy speed?",
+    "What JEEVAN NETRA capabilities would most improve pharmacy accuracy?"
+  ],
+  "hospitalAdministrator": [
+    "What are your key operational workflows across departments each day?",
+    "Which KPIs are hardest to monitor in real time?",
+    "Where do inter-department bottlenecks impact patient throughput most?",
+    "How do you currently handle escalation when systems or teams fail?",
+    "What reporting requires manual consolidation from multiple systems?",
+    "Where do you see the highest cost of inefficiency today?",
+    "How reliable is data consistency across clinical, billing, and inventory systems?",
+    "What compliance or audit pain points consume administrative time?",
+    "Which decision-making processes are slowed by delayed insights?",
+    "How do staffing, bed occupancy, and resource data influence daily planning?",
+    "What integration gaps with external systems are most critical?",
+    "What top outcomes should JEEVAN NETRA deliver in the first 6 months?"
+  ],
+  "patient": [
+    "Describe your hospital journey from appointment/arrival to discharge.",
+    "Where did you experience the longest wait or confusion?",
+    "How easy was it to access your reports, prescriptions, and bills?",
+    "Did you need to provide the same information multiple times?",
+    "How clear was communication about next steps in your treatment?",
+    "What updates did you wish you had in real time?",
+    "What part of the process felt most stressful for you or your family?",
+    "What should JEEVAN NETRA improve first to enhance patient experience?"
+  ],
+  "generalUser": [
+    "What is your role in supporting the patient during hospital visits?",
+    "Which hospital processes are hardest for caregivers/visitors to navigate?",
+    "How clear is information on appointments, queue, and doctor availability?",
+    "Where do you notice communication breakdowns between departments?",
+    "What repetitive paperwork or verification steps create frustration?",
+    "What real-time notifications would be most useful to caregivers?",
+    "What should JEEVAN NETRA change to make hospital journeys smoother?"
+  ],
+  "itSystemAdministrator": [
+    "Describe the current hospital IT architecture and key systems in use.",
+    "What are the biggest integration challenges between existing applications?",
+    "How do you currently manage user access, roles, and permissions?",
+    "Where do downtime incidents occur most, and how are they handled?",
+    "What data synchronization or latency issues affect operations?",
+    "How do you monitor security events and potential vulnerabilities?",
+    "What backup and disaster recovery gaps concern you most?",
+    "Which workflows still rely on spreadsheets or manual file exchanges?",
+    "What API or interoperability standards are currently missing?",
+    "What governance controls are needed for data quality and master records?",
+    "What must JEEVAN NETRA provide to be deployable in your environment?",
+    "What would a successful migration from legacy systems look like?"
+  ],
+  "billingAccountsStaff": [
+    "Walk through billing from service capture to final payment.",
+    "Where do charge capture errors or missing entries typically happen?",
+    "How often do billing disputes occur, and what causes them?",
+    "What delays happen due to late clinical documentation?",
+    "How do you reconcile pharmacy, lab, and procedure charges?",
+    "Which reports require manual effort at day-end or month-end?",
+    "What data duplication exists between billing and finance systems?",
+    "What should JEEVAN NETRA automate to improve billing accuracy and speed?"
+  ],
+  "insuranceTpaCoordinator": [
+    "Describe the pre-authorization and claims workflow end to end.",
+    "What documentation gaps most often delay claim approvals?",
+    "How do you coordinate between insurer, billing, and clinical teams?",
+    "Where do status visibility issues create repeated follow-up work?",
+    "What claim rejection patterns do you observe frequently?",
+    "How are policy rules checked today, and where do errors occur?",
+    "What timeline bottlenecks affect patient discharge in insured cases?",
+    "What JEEVAN NETRA features would reduce TPA turnaround times?"
+  ],
+  "emergencyStaff": [
+    "Explain the emergency intake and triage workflow under peak load.",
+    "What information is critical but often unavailable at arrival?",
+    "Where are the biggest delays in emergency diagnostics or interventions?",
+    "How do you coordinate quickly with lab, radiology, ICU, and wards?",
+    "What handoff issues occur when transferring patients to other units?",
+    "How do you track bed availability and specialist readiness in real time?",
+    "What documentation burden impacts emergency response speed?",
+    "What should JEEVAN NETRA prioritize for emergency care operations?"
+  ],
+  "wardBedManagementStaff": [
+    "Describe the process of bed allocation, transfer, and discharge turnover.",
+    "How do you track real-time bed status across departments?",
+    "What causes mismatch between actual and system bed availability?",
+    "How do cleaning and maintenance status updates reach your team?",
+    "Where do communication delays affect patient movement decisions?",
+    "How often do emergency admissions disrupt planned allocations?",
+    "Which data points are required to improve occupancy planning?",
+    "What should JEEVAN NETRA do to optimize bed utilization first?"
+  ],
+  "hospitalOwnerManagement": [
+    "What strategic outcomes are you targeting from a centralized hospital system?",
+    "Which operational inefficiencies have the highest business impact today?",
+    "What visibility gaps limit your confidence in key decisions?",
+    "How do you currently review performance across multiple departments or units?",
+    "Where do you see revenue leakage or avoidable costs?",
+    "What risks related to compliance, quality, or reputation concern you most?",
+    "How should data-driven governance be structured in your hospital?",
+    "What implementation risks do you foresee for a CHMS rollout?",
+    "Which metrics should be available on an executive dashboard daily?",
+    "What are your non-negotiable expectations from JEEVAN NETRA?"
+  ]
+}
