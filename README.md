@@ -37,7 +37,7 @@ npm run dev
 
 ## Server Environment (`server/.env`)
 ```env
-MONGO_URI=your_mongo_uri
+MONGO_URI=your_db_url
 ADMIN_USER=username
 ADMIN_PASS=yourpassword
 CLIENT_URL=http://localhost:5173
