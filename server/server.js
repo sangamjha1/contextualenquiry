@@ -4,7 +4,7 @@ const cors = require("cors");
 const rateLimit = require("express-rate-limit");
 const hpp = require("hpp");
 const dotenv = require("dotenv");
-const { initDb } = require("./src/config/mysql");
+const { initDb } = require("./src/config/postgres");
 const { purgeDeleted } = require("./src/services/storage");
 const responseRoutes = require("./src/routes/responseRoutes");
 

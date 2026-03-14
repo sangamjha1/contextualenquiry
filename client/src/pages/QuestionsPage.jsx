@@ -15,8 +15,11 @@ const QuestionsPage = () => {
 
   const questions = useMemo(() => questionsByProfession[state.profession] || [], [state.profession]);
 
-  if (!state.profession || !state.name || !state.identity || !state.workplace) {
+  if (!state.profession) {
     return <Navigate to="/profession" replace />;
+  }
+  if (!state.name || !state.identity || !state.workplace) {
+    return <Navigate to="/userinfo" replace />;
   }
 
   const currentQuestion = questions[index];

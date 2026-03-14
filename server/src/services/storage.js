@@ -1,40 +1,35 @@
-const { getPool } = require("../config/mysql");
+const { getPool } = require("../config/postgres");
 
 const addResponse = async (payload) => {
   const pool = getPool();
-  const connection = await pool.getConnection();
   try {
-    await connection.beginTransaction();
-
-    const [result] = await connection.execute(
-      "INSERT INTO responses (name, identity, workplace, profession) VALUES (?, ?, ?, ?)",
+    const result = await pool.query(
+      "INSERT INTO responses (name, identity, workplace, profession) VALUES ($1, $2, $3, $4) RETURNING id, created_at",
       [payload.name, payload.identity, payload.workplace, payload.profession]
     );
 
-    const responseId = result.insertId;
-    const answerValues = payload.answers.map((item) => [
-      responseId,
-      item.question,
-      item.answer,
-    ]);
+    const responseId = result.rows[0].id;
 
-    if (answerValues.length) {
-      await connection.query(
-        "INSERT INTO response_answers (response_id, question, answer) VALUES ?",
-        [answerValues]
+    if (payload.answers.length) {
+      const values = [];
+      const params = [];
+      payload.answers.forEach((item, index) => {
+        const offset = index * 3;
+        values.push(`($${offset + 1}, $${offset + 2}, $${offset + 3})`);
+        params.push(responseId, item.question, item.answer);
+      });
+      await pool.query(
+        `INSERT INTO response_answers (response_id, question, answer) VALUES ${values.join(", ")}`,
+        params
       );
     }
 
-    await connection.commit();
     return {
       _id: responseId,
-      createdAt: new Date().toISOString(),
+      createdAt: result.rows[0].created_at,
     };
   } catch (error) {
-    await connection.rollback();
     throw error;
-  } finally {
-    connection.release();
   }
 };
 
@@ -44,13 +39,16 @@ const queryResponses = async ({ profession, search, includeDeleted = false }) =>
   const params = [];
 
   if (profession) {
-    filters.push("r.profession = ?");
     params.push(profession);
+    filters.push(`r.profession = $${params.length}`);
   }
 
   if (search) {
-    filters.push("(r.name LIKE ? OR r.workplace LIKE ?)");
-    params.push(`%${search}%`, `%${search}%`);
+    params.push(`%${search}%`);
+    const nameIndex = params.length;
+    params.push(`%${search}%`);
+    const workIndex = params.length;
+    filters.push(`(r.name ILIKE $${nameIndex} OR r.workplace ILIKE $${workIndex})`);
   }
 
   if (!includeDeleted) {
@@ -59,7 +57,7 @@ const queryResponses = async ({ profession, search, includeDeleted = false }) =>
 
   const whereClause = filters.length ? `WHERE ${filters.join(" AND ")}` : "";
 
-  const [rows] = await pool.query(
+  const result = await pool.query(
     `SELECT r.id, r.name, r.identity, r.workplace, r.profession, r.created_at, r.deleted_at,
             a.question, a.answer
      FROM responses r
@@ -70,7 +68,7 @@ const queryResponses = async ({ profession, search, includeDeleted = false }) =>
   );
 
   const byResponse = new Map();
-  rows.forEach((row) => {
+  result.rows.forEach((row) => {
     if (!byResponse.has(row.id)) {
       byResponse.set(row.id, {
         _id: row.id,
@@ -99,26 +97,26 @@ module.exports = {
   queryResponses,
   deleteResponse: async (id) => {
     const pool = getPool();
-    const [result] = await pool.execute(
-      "UPDATE responses SET deleted_at = NOW() WHERE id = ? AND deleted_at IS NULL",
+    const result = await pool.query(
+      "UPDATE responses SET deleted_at = NOW() WHERE id = $1 AND deleted_at IS NULL",
       [id]
     );
-    return result.affectedRows > 0;
+    return result.rowCount > 0;
   },
   restoreResponse: async (id) => {
     const pool = getPool();
-    const [result] = await pool.execute(
-      "UPDATE responses SET deleted_at = NULL WHERE id = ? AND deleted_at IS NOT NULL",
+    const result = await pool.query(
+      "UPDATE responses SET deleted_at = NULL WHERE id = $1 AND deleted_at IS NOT NULL",
       [id]
     );
-    return result.affectedRows > 0;
+    return result.rowCount > 0;
   },
   purgeDeleted: async (hours = 24) => {
     const pool = getPool();
-    const [result] = await pool.execute(
-      "DELETE FROM responses WHERE deleted_at IS NOT NULL AND deleted_at < (NOW() - INTERVAL ? HOUR)",
+    const result = await pool.query(
+      "DELETE FROM responses WHERE deleted_at IS NOT NULL AND deleted_at < (NOW() - ($1 * INTERVAL '1 hour'))",
       [hours]
     );
-    return result.affectedRows || 0;
+    return result.rowCount || 0;
   },
 };

@@ -10,6 +10,7 @@ const AdminDashboardPage = () => {
   const [search, setSearch] = useState("");
   const [viewMode, setViewMode] = useState("respondents");
   const [dataScope, setDataScope] = useState("active");
+  const [questionSearch, setQuestionSearch] = useState("");
   const [page, setPage] = useState(1);
   const [expanded, setExpanded] = useState(() => new Set());
   const [deletingId, setDeletingId] = useState(null);
@@ -49,7 +50,7 @@ const AdminDashboardPage = () => {
   useEffect(() => {
     setPage(1);
     setExpanded(new Set());
-  }, [profession, search, dataScope]);
+  }, [profession, search, dataScope, questionSearch]);
 
   const onExport = async () => {
     try {
@@ -68,6 +69,46 @@ const AdminDashboardPage = () => {
     } catch {
       setError("Unable to export CSV");
     }
+  };
+
+  const onExportGrouped = () => {
+    const rows = [
+      [
+        "question",
+        "respondent",
+        "identity",
+        "workplace",
+        "profession",
+        "createdAt",
+        "answer",
+      ],
+    ];
+
+    filteredGroupedByQuestion.forEach((item) => {
+      item.answers.forEach((answer) => {
+        rows.push([
+          item.question,
+          answer.respondent,
+          answer.identity || "",
+          answer.workplace || "",
+          professionLabels[answer.profession] || answer.profession || "",
+          answer.createdAt ? new Date(answer.createdAt).toISOString() : "",
+          answer.answer || "",
+        ]);
+      });
+    });
+
+    const csv = rows
+      .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","))
+      .join("\n");
+
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "jeevan-netra-grouped-answers.csv";
+    a.click();
+    window.URL.revokeObjectURL(url);
   };
 
   const PAGE_SIZE = 8;
@@ -98,9 +139,59 @@ const AdminDashboardPage = () => {
     }));
   }, [responses]);
 
-  const questionPageTotal = Math.max(1, Math.ceil(groupedByQuestion.length / PAGE_SIZE));
+  const filteredGroupedByQuestion = useMemo(() => {
+    if (!questionSearch.trim()) return groupedByQuestion;
+    const needle = questionSearch.trim().toLowerCase();
+    return groupedByQuestion.filter((item) => item.question.toLowerCase().includes(needle));
+  }, [groupedByQuestion, questionSearch]);
+
+  const questionPageTotal = Math.max(1, Math.ceil(filteredGroupedByQuestion.length / PAGE_SIZE));
   const questionPageStart = (page - 1) * PAGE_SIZE;
-  const questionItems = groupedByQuestion.slice(questionPageStart, questionPageStart + PAGE_SIZE);
+  const questionItems = filteredGroupedByQuestion.slice(questionPageStart, questionPageStart + PAGE_SIZE);
+
+  const stats = useMemo(() => {
+    const total = responses.length;
+    const byProfession = Object.keys(professionLabels).map((key) => ({
+      key,
+      label: professionLabels[key],
+      count: responses.filter((entry) => entry.profession === key).length,
+    }));
+
+    const painKeywords = [
+      "pain",
+      "bottleneck",
+      "delay",
+      "missing",
+      "gap",
+      "redundant",
+      "inefficien",
+      "stress",
+      "confusion",
+      "difficult",
+    ];
+
+    const painCounts = new Map();
+    responses.forEach((entry) => {
+      entry.answers.forEach((qa) => {
+        const q = qa.question.toLowerCase();
+        if (!painKeywords.some((k) => q.includes(k))) return;
+        const parts = String(qa.answer || "")
+          .split(";")
+          .map((p) => p.trim())
+          .filter(Boolean);
+        parts.forEach((part) => {
+          painCounts.set(part, (painCounts.get(part) || 0) + 1);
+        });
+      });
+    });
+
+    const topPainPoints = Array.from(painCounts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 6)
+      .map(([label, count]) => ({ label, count }));
+
+    return { total, byProfession, topPainPoints };
+  }, [responses]);
 
   const toggleExpanded = (id) => {
     setExpanded((prev) => {
@@ -178,7 +269,42 @@ const AdminDashboardPage = () => {
       </div>
 
       <div className="card-surface mb-4 rounded-2xl border border-slate-700/60 p-4 shadow-soft">
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-5">
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-4">
+          <div className="rounded-2xl border border-slate-700/60 bg-slate-900/40 p-4">
+            <p className="text-xs uppercase tracking-[0.2em] text-primary">Total Responses</p>
+            <p className="mt-2 text-2xl font-semibold text-slate-100">{stats.total}</p>
+          </div>
+          <div className="rounded-2xl border border-slate-700/60 bg-slate-900/40 p-4">
+            <p className="text-xs uppercase tracking-[0.2em] text-primary">By Profession</p>
+            <div className="mt-2 space-y-1 text-xs text-slate-300">
+              {stats.byProfession.map((item) => (
+                <div key={item.key} className="flex items-center justify-between">
+                  <span>{item.label}</span>
+                  <span className="text-slate-200">{item.count}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="rounded-2xl border border-slate-700/60 bg-slate-900/40 p-4 md:col-span-2">
+            <p className="text-xs uppercase tracking-[0.2em] text-primary">Top Pain Points</p>
+            {stats.topPainPoints.length ? (
+              <div className="mt-2 grid grid-cols-1 gap-2 text-xs text-slate-300 md:grid-cols-2">
+                {stats.topPainPoints.map((item) => (
+                  <div key={item.label} className="rounded-xl border border-slate-700/60 bg-slate-900/60 px-3 py-2">
+                    <p className="text-slate-200">{item.label}</p>
+                    <p className="text-slate-400">Mentions: {item.count}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="mt-2 text-xs text-slate-400">No pain point trends yet.</p>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="card-surface mb-4 rounded-2xl border border-slate-700/60 p-4 shadow-soft">
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-6">
           <select
             className="rounded-xl border border-slate-600 bg-slate-900/70 px-3 py-2 text-sm"
             value={profession}
@@ -218,6 +344,14 @@ const AdminDashboardPage = () => {
             <option value="questions">Group by question</option>
           </select>
 
+          <input
+            className="rounded-xl border border-slate-600 bg-slate-900/70 px-3 py-2 text-sm"
+            placeholder="Search question text"
+            value={questionSearch}
+            onChange={(e) => setQuestionSearch(e.target.value)}
+            disabled={viewMode !== "questions" || dataScope === "deleted"}
+          />
+
           <button
             type="button"
             onClick={onExport}
@@ -225,6 +359,16 @@ const AdminDashboardPage = () => {
           >
             Export CSV
           </button>
+
+          {viewMode === "questions" && dataScope === "active" && (
+            <button
+              type="button"
+              onClick={onExportGrouped}
+              className="rounded-xl border border-slate-600 px-4 py-2 text-sm text-slate-200"
+            >
+              Export Grouped CSV
+            </button>
+          )}
         </div>
       </div>
 
@@ -367,12 +511,12 @@ const AdminDashboardPage = () => {
                 );
               })}
 
-              {!groupedByQuestion.length && <p className="text-sm text-slate-300">No responses found for selected filters.</p>}
+              {!filteredGroupedByQuestion.length && <p className="text-sm text-slate-300">No responses found for selected filters.</p>}
 
-              {groupedByQuestion.length > PAGE_SIZE && (
+              {filteredGroupedByQuestion.length > PAGE_SIZE && (
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <p className="text-xs text-slate-400">
-                    Showing {questionPageStart + 1}-{Math.min(questionPageStart + PAGE_SIZE, groupedByQuestion.length)} of {groupedByQuestion.length}
+                    Showing {questionPageStart + 1}-{Math.min(questionPageStart + PAGE_SIZE, filteredGroupedByQuestion.length)} of {filteredGroupedByQuestion.length}
                   </p>
                   <div className="flex gap-2">
                     <button
